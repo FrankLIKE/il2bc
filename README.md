@@ -47,3 +47,5 @@ http://llvm.org/builds/downloads/LLVM-3.6.0-r222681-win32.exe
 GCC MinGW
 http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.8.2/threads-posix/dwarf/i686-4.8.2-release-posix-dwarf-rt_v3-rev4.7z/download
 
+
+PS2. You can download binaries from the site http://csnative.codeplex.com/
