@@ -97,8 +97,8 @@ namespace Il2Native.Logic.Gencode
         {
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine("i8* bitcast (i8** getelementptr inbounds (i8** @_ZTVN10__cxxabiv119__pointer_type_infoE, i32 2) to i8*),");
-            writer.WriteLine("i8* getelementptr inbounds ([{1} x i8]* @\"{0}\", i32 0, i32 0),", type.GetRttiPointerStringName(), type.StringLength(1));
+            writer.WriteLine("i8* bitcast (i8** getelementptr inbounds (i8*, i8** @_ZTVN10__cxxabiv119__pointer_type_infoE, i32 2) to i8*),");
+            writer.WriteLine("i8* getelementptr inbounds ([{1} x i8], [{1} x i8]* @\"{0}\", i32 0, i32 0),", type.GetRttiPointerStringName(), type.StringLength(1));
             writer.WriteLine("i32 0,");
             writer.Write("i8* bitcast (");
             type.WriteRttiClassInfoDeclaration(writer);

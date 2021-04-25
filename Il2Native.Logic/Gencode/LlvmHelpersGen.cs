@@ -88,6 +88,8 @@ namespace Il2Native.Logic.Gencode
             llvmWriter.WriteSetResultNumber(opCodeMethodInfo, llvmWriter.ResolveType("System.Byte").ToPointerType().ToPointerType());
             writer.Write("load ");
             llvmWriter.WriteMethodPointerType(writer, methodInfo, thisType);
+            writer.Write("*, ");
+            llvmWriter.WriteMethodPointerType(writer, methodInfo, thisType);
             writer.Write("** ");
             llvmWriter.WriteResult(pointerToInterfaceVirtualTablePointersResultNumber);
             writer.Write(", align {0}", LlvmWriter.PointerSize);
@@ -99,6 +101,8 @@ namespace Il2Native.Logic.Gencode
             llvmWriter.WriteSetResultNumber(opCodeMethodInfo, llvmWriter.ResolveType("System.Byte").ToPointerType());
             writer.Write("getelementptr inbounds ");
             llvmWriter.WriteMethodPointerType(writer, methodInfo, thisType);
+            writer.Write(", ");
+            llvmWriter.WriteMethodPointerType(writer, methodInfo, thisType);
             writer.Write("* ");
             llvmWriter.WriteResult(virtualTableOfMethodPointersResultNumber);
             writer.WriteLine(", i64 {0}", methodIndex);
@@ -107,6 +111,8 @@ namespace Il2Native.Logic.Gencode
             // load method address
             llvmWriter.WriteSetResultNumber(opCodeMethodInfo, llvmWriter.ResolveType("System.Byte").ToPointerType());
             writer.Write("load ");
+            llvmWriter.WriteMethodPointerType(writer, methodInfo, thisType);
+            writer.Write(", ");
             llvmWriter.WriteMethodPointerType(writer, methodInfo, thisType);
             writer.Write("* ");
             llvmWriter.WriteResult(pointerToFunctionPointerResultNumber);
@@ -532,7 +538,7 @@ namespace Il2Native.Logic.Gencode
                 // extra support
                 if (methodInfo.IsExternalLibraryMethod())
                 {
-                    writer.Write("(...)* ");
+                    writer.Write("(...) ");
                 }
             }
 
@@ -770,6 +776,8 @@ namespace Il2Native.Logic.Gencode
 
                 // last part
                 writer.Write("load ");
+                typeToLoad.WriteTypePrefix(writer, structAsRef);
+                writer.Write(", ");
                 typeToLoad.WriteTypePrefix(writer, structAsRef);
                 if (appendReference)
                 {
