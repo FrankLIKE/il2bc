@@ -35,7 +35,7 @@ namespace Il2Native.Logic.Gencode
             var virtualTable = declaringType.GetVirtualTable(llvmWriter);
 
             return string.Format(
-                "getelementptr inbounds ([{0} x i8*]* {1}, i32 0, i32 {2})", 
+                "getelementptr inbounds ([{0} x i8*], [{0} x i8*]* {1}, i32 0, i32 {2})", 
                 virtualTable.GetVirtualTableSize(), 
                 declaringType.GetVirtualTableName(), 
                 FunctionsOffsetInVirtualTable);
@@ -53,7 +53,7 @@ namespace Il2Native.Logic.Gencode
         {
             var virtualInterfaceTable = declaringType.GetVirtualInterfaceTable(@interface);
             return string.Format(
-                "getelementptr inbounds ([{0} x i8*]* {1}, i32 0, i32 {2})", 
+                "getelementptr inbounds ([{0} x i8*], [{0} x i8*]* {1}, i32 0, i32 {2})", 
                 virtualInterfaceTable.GetVirtualTableSize(), 
                 declaringType.GetVirtualInterfaceTableName(@interface), 
                 FunctionsOffsetInVirtualTable);

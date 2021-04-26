@@ -211,7 +211,9 @@ namespace Il2Native.Logic.Gencode
             parameter.ParameterType.WriteTypePrefix(writer, parameter.ParameterType.IsStructureType());
             if (parameter.ParameterType.IsStructureType() && !parameter.IsOut && !parameter.IsRef)
             {
-                writer.Write(" byval align " + LlvmWriter.PointerSize);
+                writer.Write(" byval(");
+                parameter.ParameterType.WriteTypePrefix2(writer, parameter.ParameterType.IsStructureType());
+                writer.Write(") align " + LlvmWriter.PointerSize);
             }
 
             writer.Write(' ');
@@ -227,7 +229,9 @@ namespace Il2Native.Logic.Gencode
             type.WriteTypePrefix(writer, type.IsStructureType());
             if (type.IsStructureType())
             {
-                writer.Write(" byval align " + LlvmWriter.PointerSize);
+                writer.Write(" byval(");
+                type.WriteTypePrefix2(writer, type.IsStructureType());
+                writer.Write(") align " + LlvmWriter.PointerSize);
             }
 
             writer.Write(' ');

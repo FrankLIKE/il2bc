@@ -501,6 +501,59 @@ namespace Il2Native.Logic.Gencode
         /// </param>
         /// <param name="writer">
         /// </param>
+        /// <param name="asReference">
+        /// </param>
+        public static void WriteTypeModifiers2(this IType type, IndentedTextWriter writer, bool asReference)
+        {
+            var refChar = '*';
+            var effectiveType = type;
+
+            if (type.IsArray)
+            {
+                //writer.Write(refChar);
+
+                if (type.IsByRef)
+                {
+                    writer.Write(refChar);
+                }
+
+                return;
+            }
+
+            var level = 0;
+            do
+            {
+                var isReference = !effectiveType.IsValueType;
+                //if ((isReference || (!isReference && asReference && level == 0) || effectiveType.IsPointer) && !effectiveType.IsGenericParameter
+                //    && !effectiveType.IsArray && !effectiveType.IsByRef)
+                //{
+                //    writer.Write(refChar);
+                //}
+
+                if (effectiveType.IsByRef || effectiveType.IsArray)
+                {
+                    writer.Write(refChar);
+                }
+
+                if (effectiveType.HasElementType && !effectiveType.IsArray)
+                {
+                    effectiveType = effectiveType.GetElementType();
+                    level++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            while (effectiveType != null);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="type">
+        /// </param>
+        /// <param name="writer">
+        /// </param>
         /// <param name="isPointer">
         /// </param>
         public static void WriteTypeName(this IType type, LlvmIndentedTextWriter writer, bool isPointer)
@@ -528,6 +581,20 @@ namespace Il2Native.Logic.Gencode
         {
             type.WriteTypeWithoutModifiers(writer);
             type.WriteTypeModifiers(writer, asReference);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="type">
+        /// </param>
+        /// <param name="writer">
+        /// </param>
+        /// <param name="asReference">
+        /// </param>
+        public static void WriteTypePrefix2(this IType type, LlvmIndentedTextWriter writer, bool asReference = false)
+        {
+            type.WriteTypeWithoutModifiers(writer);
+            type.WriteTypeModifiers2(writer, asReference);
         }
 
         /// <summary>

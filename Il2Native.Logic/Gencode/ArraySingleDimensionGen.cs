@@ -293,6 +293,8 @@ namespace Il2Native.Logic.Gencode
             // save element size
             llvmWriter.WriteSetResultNumber(opCode, intType);
             writer.Write("getelementptr inbounds ");
+            arrayInstanceResult.Type.WriteTypePrefix2(writer);
+            writer.Write(", ");
             arrayInstanceResult.Type.WriteTypePrefix(writer);
             writer.Write(" ");
             llvmWriter.WriteResult(arrayInstanceResult);
@@ -310,6 +312,8 @@ namespace Il2Native.Logic.Gencode
             // save array size
             llvmWriter.WriteSetResultNumber(opCode, intType);
             writer.Write("getelementptr inbounds ");
+            arrayInstanceResult.Type.WriteTypePrefix2(writer);
+            writer.Write(", ");
             arrayInstanceResult.Type.WriteTypePrefix(writer);
             writer.Write(" ");
             llvmWriter.WriteResult(arrayInstanceResult);
@@ -362,6 +366,8 @@ namespace Il2Native.Logic.Gencode
 
             var result = llvmWriter.WriteSetResultNumber(opCode, dataType);
             writer.Write("getelementptr ");
+            arrayInstanceResult.Type.WriteTypePrefix2(writer, true);
+            writer.Write(", ");
             arrayInstanceResult.Type.WriteTypePrefix(writer, true);
 
             writer.Write(" ");

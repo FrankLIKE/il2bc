@@ -2492,6 +2492,9 @@ namespace Il2Native.Logic
                     ReadDbgLine(OpCodePart.CreateNop);
                 }
 
+                if ((!ctor.IsAbstract && !this.NoBody) || isDelegateBodyFunctions)
+                    this.Output.Write(" personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)");
+
                 this.Output.WriteLine(" {");
                 this.Output.Indent++;
                 this.WriteLocalVariableDeclarations(methodBase.LocalVariables);
@@ -2799,6 +2802,8 @@ namespace Il2Native.Logic
             this.WriteSetResultNumber(opCodePart, fieldType);
 
             writer.Write("getelementptr inbounds ");
+            valueReference.Type.ToClass().WriteTypePrefix2(writer);
+            writer.Write(", ");
             valueReference.Type.ToClass().WriteTypePrefix(writer);
             writer.Write(" ");
             writer.Write(valueReference);
@@ -2997,7 +3002,7 @@ namespace Il2Native.Logic
 
             // get 'this' address
             var thisAddressFromInterfaceResultNumber = this.WriteSetResultNumber(opCodeMethodInfo, thisType);
-            writer.Write("getelementptr i8* ");
+            writer.Write("getelementptr i8, i8* ");
             this.WriteResult(pointerToInterfaceVirtualTablePointersAsBytePointerResultNumber);
             writer.Write(", i32 ");
             this.WriteResult(offsetAddressAsIntResultNumber);
@@ -3118,7 +3123,9 @@ namespace Il2Native.Logic
 
                 if (!noArgumentName)
                 {
-                    writer.Write(" noalias sret %agg.result");
+                    writer.Write(" noalias sret(");
+                    returnType.WriteTypePrefix(writer, returnType.IsStructureType());
+                    writer.Write(") %agg.result");
                 }
             }
 
@@ -3168,7 +3175,9 @@ namespace Il2Native.Logic
                         {
                             if (!parameter.IsOut && !parameter.IsRef)
                             {
-                                writer.Write(" byval align " + PointerSize);
+                                writer.Write(" byval(");
+                                parameter.ParameterType.WriteTypePrefix2(writer, parameter.ParameterType.IsStructureType());
+                                writer.Write(") align " + PointerSize);
                             }
 
                             writer.Write(" %\"{0}.", parameterIndex);
@@ -3418,6 +3427,9 @@ namespace Il2Native.Logic
             {
                 this.WriteMethodNumber();
             }
+
+            if ((!method.IsAbstract && !this.NoBody) || isDelegateBodyFunctions)
+                this.Output.Write(" personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)");
 
             // write local declarations
             var methodBodyBytes = method.ResolveMethodBody(genericContext);
@@ -3872,8 +3884,8 @@ namespace Il2Native.Logic
             {
                 // Global ctors
                 this.Output.WriteLine(
-                    "@llvm.global_ctors = appending global [1 x { i32, void ()* }] [{ i32, void ()* } { i32 65535, void ()* "
-                    + this.GetGlobalConstructorsFunctionName() + " }]");
+                    "@llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* "
+                    + this.GetGlobalConstructorsFunctionName() + ", i8* null }]");
                 this.Output.WriteLine(string.Empty);
             }
 
@@ -5460,6 +5472,8 @@ namespace Il2Native.Logic
             var offsetResult = this.WriteSetResultNumber(opCode, this.ResolveType("System.Int32"));
             writer.Write("getelementptr ");
             this.ResolveType("System.Int32").WriteTypePrefix(writer);
+            writer.Write(", ");
+            this.ResolveType("System.Int32").WriteTypePrefix(writer);
             writer.Write("* ");
             this.WriteResult(res);
             writer.WriteLine(", i32 -{0}", ObjectInfrastructure.FunctionsOffsetInVirtualTable);
@@ -6068,6 +6082,11 @@ namespace Il2Native.Logic
             if (!options.HasFlag(OperandOptions.IgnoreOperand))
             {
                 var type = effectiveType ?? this.ResolveType("System.Void");
+                if (op == "getelementptr inbounds") // XXX
+                {
+                    type.WriteTypePrefix2(writer);
+                    writer.Write(", ");
+                }
                 type.WriteTypePrefix(writer);
                 if (options.HasFlag(OperandOptions.AppendPointer))
                 {
